@@ -12,3 +12,4 @@ markdown = { git = "https://github.com/mjkoo/markdown.rs", branch = "ordered-lis
 structopt = "0.3.22"
 pest = "2.1.3"
 pest_derive = "2.1.0"
+termimad = "0.14.2"

@@ -27,10 +27,10 @@ fn main() -> Result<()> {
 
     for split in splits.into_iter() {
         if let Some((Block::CodeBlock(Some(name), content), rest)) = split.split_last() {
+            println!("{}", termimad::term_text(&markdown::generate_markdown(rest.to_vec())));
             println!("GOT CODE: {} -> {}", name, content);
-            println!("{}", markdown::generate_markdown(rest.to_vec()));
         } else {
-            println!("{}", markdown::generate_markdown(split));
+            println!("{}", termimad::term_text(&markdown::generate_markdown(split)));
         }
     }
 

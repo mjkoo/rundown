@@ -38,7 +38,7 @@ expression = { operator_expression | unary_expression | function_call | term }
     operator_expression = { (function_call | unary_expression | term ) ~ operator ~ expression }
     unary_expression = { unary_operator ~ expression }
     function_call = { ident ~ open_paren ~ arguments ~ close_paren }
-        arguments = { (term ~ ("," ~ term)*)? }
+        arguments = { (expression ~ ("," ~ expression)*)? }
     term = { ident | int | string | boolean | open_paren ~ expression ~ close_paren }
 
 statement = { declare | assignment | if_statement | function_definition | goto_statement | expression ~ semicolon }

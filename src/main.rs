@@ -6,7 +6,7 @@ use markdown::Block;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "mdya", about = "Markdown your adventure!")]
+#[structopt(name = "rundown", about = "Run your markdown adventure!")]
 struct Opt {
     /// Input file
     #[structopt(parse(from_os_str))]

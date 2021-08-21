@@ -3,16 +3,29 @@ use std::fs;
 use std::io::stdout;
 use std::path::PathBuf;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use indexmap::IndexMap;
+use lazy_static::lazy_static;
 use markdown::{Block, Span};
-use mdcat::{Environment, Settings, ResourceAccess, TerminalCapabilities, TerminalSize};
+use mdcat::{Environment, ResourceAccess, Settings, TerminalCapabilities, TerminalSize};
 use pulldown_cmark::{Options, Parser};
 use slugify::slugify;
 use structopt::StructOpt;
 use syntect::parsing::SyntaxSet;
 
 const INTRO_SECTION: &'static str = "intro";
+const RUNDOWN_CODE_BLOCK_SYNTAX: &'static str = "rundown";
+
+lazy_static! {
+    static ref MDCAT_SETTINGS: Settings = Settings {
+        terminal_capabilities: TerminalCapabilities::detect(),
+        terminal_size: TerminalSize::from_terminal().unwrap(),
+        resource_access: ResourceAccess::LocalOnly,
+        syntax_set: SyntaxSet::load_defaults_newlines(),
+    };
+    static ref MDCAT_ENV: Environment =
+        Environment::for_local_directory(&env::current_dir().unwrap()).unwrap();
+}
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "rundown", about = "Run your markdown adventure!")]
@@ -57,24 +70,15 @@ fn construct_index(blocks: &[Block]) -> IndexMap<String, Vec<Block>> {
 }
 
 fn print_markdown(content: &str) -> Result<()> {
-    let terminal_capabilities = TerminalCapabilities::detect();
-    let terminal_size = TerminalSize::from_terminal().ok_or_else(|| anyhow!("Unable to detect terminal parameters"))?;
-    let settings = Settings{
-        terminal_capabilities,
-        terminal_size,
-        resource_access: ResourceAccess::LocalOnly,
-        syntax_set: SyntaxSet::load_defaults_newlines(),
-    };
-
+    // TODO: Calculate this once?
     let parser = Parser::new_ext(
         content,
         Options::ENABLE_TASKLISTS | Options::ENABLE_STRIKETHROUGH,
     );
-    let env = Environment::for_local_directory(&env::current_dir()?)?;
 
     let stdout = stdout();
     let mut handle = stdout.lock();
-    mdcat::push_tty(&settings, &env, &mut handle, parser)?;
+    mdcat::push_tty(&MDCAT_SETTINGS, &MDCAT_ENV, &mut handle, parser)?;
 
     Ok(())
 }
@@ -89,11 +93,16 @@ fn main() -> Result<()> {
         if let Some((name, section)) = section_index.get_index(pc) {
             println!("{}", name);
             for block in section {
-                if let Block::CodeBlock(_, content) = block {
-                    println!("GOT CODE: {}", content);
-                } else {
-                    let content = markdown::generate_markdown(vec![block.clone()]);
-                    print_markdown(&content)?;
+                match block {
+                    Block::CodeBlock(Some(syntax), content)
+                        if syntax == RUNDOWN_CODE_BLOCK_SYNTAX =>
+                    {
+                        println!("GOT CODE: {}", content);
+                    }
+                    _ => {
+                        let content = markdown::generate_markdown(vec![block.clone()]);
+                        print_markdown(&content)?;
+                    }
                 }
             }
 

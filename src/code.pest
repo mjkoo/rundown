@@ -41,14 +41,15 @@ expression = { operator_expression | unary_expression | function_call | term }
         arguments = { (expression ~ ("," ~ expression)*)? }
     term = { int | string | boolean | ident | open_paren ~ expression ~ close_paren }
 
-statement = { declare ~ semicolon | assignment ~ semicolon | if_statement | function_definition | goto_statement ~ semicolon | expression ~ semicolon }
+statement = { declare ~ semicolon | assignment ~ semicolon | if_statement | function_definition | goto_statement ~ semicolon | return ~ semicolon | expression ~ semicolon }
     declare = { pattern ~ assignment }
     assignment = { ident ~ "=:" ~ expression }
     if_statement = { "if" ~ open_paren ~ expression ~ close_paren ~ open_curly ~ list_statement ~ close_curly ~ else_statement? }
-    else_statement = { "else" ~ open_curly ~ list_statement ~ close_curly } 
+        else_statement = { "else" ~ open_curly ~ list_statement ~ close_curly } 
     function_definition = { "fun" ~ ident ~ open_paren ~ parameters ~ close_paren ~ open_curly ~ list_statement ~ close_curly }
         parameters = { (ident ~ ("," ~ ident)*)? }
     goto_statement = { "goto" ~ string }
+    return = { "return" ~ expression}
     semicolon = { ";" }
 
 list_statement = _{ statement+ }

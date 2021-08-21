@@ -1,0 +1,56 @@
+WHITESPACE = _{ " " | "\r" | "\t" | "\n" }
+
+int = { ASCII_DIGIT+ }
+string = ${ "\"" ~ inner ~ "\"" }
+inner = @{ char* }
+char = {
+    !("\"" | "\\") ~ ANY
+    | "\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
+    | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
+}
+boolean = { "true" | "false" }
+
+open_paren = { "(" }
+close_paren = { ")" }
+open_curly = { "{" }
+close_curly = { "}" }
+ident = @{ ASCII_ALPHA ~ ASCII_ALPHANUMERIC* }
+pattern = { global_var | static_var | var }
+    global_var = { "global" ~ "var" }
+    static_var = { "static" ~ "var" }
+    var = { "var" }
+
+operator = { add | subtract | multiply | divide | remainder | and | or | equals }
+    add = { "+" }
+    subtract = { "-" }
+    multiply = { "*" }
+    divide = { "/" }
+    remainder = { "%" }
+    and = { "and" }
+    or = { "or" }
+    equals = { "==" }
+
+unary_operator = { not | negative }
+    not = { "not" }
+    negative = { "-" }
+
+expression = { operator_expression | unary_expression | function_call | term }
+    operator_expression = { (function_call | unary_expression | term ) ~ operator ~ expression }
+    unary_expression = { unary_operator ~ expression }
+    function_call = { ident ~ open_paren ~ arguments ~ close_paren }
+        arguments = { (term ~ ("," ~ term)*)? }
+    term = { ident | int | string | boolean | open_paren ~ expression ~ close_paren }
+
+statement = { declare | assignment | if_statement | function_definition | goto_statement | expression ~ semicolon }
+    declare = { pattern ~ assignment ~ semicolon }
+    assignment = { ident ~ "=:" ~ expression ~ semicolon }
+    if_statement = { "if" ~ open_paren ~ expression ~ close_paren ~ open_curly ~ list_statement ~ close_curly ~ else_statement? }
+    else_statement = { "else" ~ open_curly ~ list_statement ~ close_curly } 
+    function_definition = { "fun" ~ ident ~ open_paren ~ parameters ~ close_paren ~ open_curly ~ list_statement ~ close_curly }
+        parameters = { (ident ~ ("," ~ ident)*)? }
+    goto_statement = { "goto" ~ string ~ semicolon }
+    semicolon = { ";" }
+
+list_statement = _{ statement+ }
+
+language = { list_statement }

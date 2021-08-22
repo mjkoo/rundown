@@ -21,12 +21,12 @@ scope = { global_var | static_var | var }
     static_var = { "let" ~ "static" }
     var = { "let" }
 
-binary_operator = { add | subtract | multiply | divide | remainder | and | or | equals | not_equals }
+binary_operator = { add | subtract | multiply | divide | modulo | and | or | equals | not_equals }
     add = { "+" }
     subtract = { "-" }
     multiply = { "*" }
     divide = { "/" }
-    remainder = { "%" }
+    modulo = { "%" }
     and = { "&&" }
     or = { "||" }
     equals = { "==" }

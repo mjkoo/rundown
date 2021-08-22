@@ -32,16 +32,17 @@ fn read(_arguments: &[Value]) -> Result<Value> {
     let mut buffer = String::new();
     let stdin = io::stdin();
     stdin.lock().read_line(&mut buffer)?;
+    buffer = buffer.trim().to_lowercase().to_string();
 
     // Do some dynamic typing magic
-    if buffer.to_lowercase() == "true" {
+    if buffer == "true" {
         Ok(Value::Bool(true))
-    } else if buffer.to_lowercase() == "false" {
+    } else if buffer == "false" {
         Ok(Value::Bool(false))
     } else if let Ok(i) = buffer.parse::<i64>() {
         Ok(Value::Int(i))
     } else {
-        Ok(Value::Str(String::from(buffer.trim()).to_lowercase()))
+        Ok(Value::Str(buffer))
     }
 }
 

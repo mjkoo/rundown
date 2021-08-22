@@ -54,6 +54,6 @@ statement = { declare ~ semicolon | assignment ~ semicolon | if_statement | func
     return_statement = { "return" ~ expression}
     semicolon = _{ ";" }
 
-list_statement = _{ statement+ }
+list_statement = { statement+ }
 
 language = { list_statement }

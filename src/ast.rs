@@ -84,7 +84,7 @@ pub fn parse(source: &str) -> Result<Vec<Statement>> {
     let pairs = LanguageParser::parse(Rule::language, source)?;
     for pair in pairs {
         if pair.as_rule() == Rule::language {
-            for statement in pair.into_inner() {
+            for statement in pair.into_inner().next().unwrap().into_inner() {
                 ast.push(build_statement_from_pair(
                     statement.into_inner().next().unwrap(),
                 ));
@@ -231,7 +231,7 @@ fn get_expression_from_pair(pair: pest::iterators::Pair<Rule>) -> Expression {
             Expression::Ident(String::from(str))
         }
         Rule::int => {
-            let str = pair.as_str();
+            let str = pair.as_str().trim();
             Expression::Int(str.parse::<i64>().unwrap())
         }
         Rule::boolean => {

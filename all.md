@@ -29,8 +29,8 @@ result = 2 + 2;
 ```
 
 ```rundown
-global var foo = "bar";
-global var a = 1;
+global foo = "bar";
+global a = 1;
 
 fun doit() {
     goto "another-header-i-guess";
@@ -42,4 +42,11 @@ a = a + 1;
 if (b == 2) {
     doit();
 }
+
+print("foo");
+sleep(5);
+print("bar");
+var x = read();
+print(x);
+
 ```

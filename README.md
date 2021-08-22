@@ -4,6 +4,10 @@ Rundown is a domain specific language for building Runnable Markdown.
 
 The intent is to make a Literate programming language, where the whole program and text are interwoven in such as way that the code is legible.
 
+This README is also a Rundown script, try running it!
+
+More examples can be found in the `examples` directory.
+
 To execute a Rundown Script, run `cargo run /path/to/script` from the project directory.
 
 ## Rundown Question
@@ -190,7 +194,7 @@ How you declared a variable impacts it's scope.
 
 1. `let a = 1;` will declare a variable local to a code block.
 1. `let static a = 1` will declare a variable that persists in a code block through uses.
-It will only be declared once for a code block, but the value persists.
+   It will only be declared once for a code block, but the value persists.
 1. `let global a = 1` declares a variable that can be used in all code blocks.
 
 Variable values can be modified through assigning.
@@ -206,11 +210,11 @@ Branching is done with if statements, and goto.
 There are a few normal logical operators.
 However, When joining multiple expressions, if the left hand side is itself multiple expressions, it should be wrapped in parenthesis.
 
-* `||`
-* `&&`
-* `!`
-* `==`
-* `!=`
+- `||`
+- `&&`
+- `!`
+- `==`
+- `!=`
 
 ```
 let a = 1;
@@ -250,11 +254,11 @@ goto "loops"
 
 There are a number of arithmatic operators.
 
-* `+`: add
-* `-`: subtract
-* `*`: multiply
-* `/`: divide
-* `%`: modulo
+- `+`: add
+- `-`: subtract
+- `*`: multiply
+- `/`: divide
+- `%`: modulo
 
 Additionally, you can use `-` as a negative operator on a single value.
 
@@ -280,9 +284,9 @@ name(arg1, (2 - 2), arg3);
 
 There are a few builtin functions for ease of use.
 
-* `read()` will read input from stdin until a newline.
-* `sleep(n)` will pause execution for n seconds
-* `print(expr)` will print the result of some expression
+- `read()` will read input from stdin until a newline.
+- `sleep(n)` will pause execution for n seconds
+- `print(expr)` will print the result of some expression
 
 ## End
 

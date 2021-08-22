@@ -21,7 +21,7 @@ scope = { global_var | static_var | var }
     static_var = { "let" ~ "static" }
     var = { "let" }
 
-binary_operator = { add | subtract | multiply | divide | modulo | and | or | equals | not_equals }
+binary_operator = { add | subtract | multiply | divide | modulo | and | or | equals | not_equals | greater_than_equals | less_than_equals | greater_than | less_than }
     add = { "+" }
     subtract = { "-" }
     multiply = { "*" }
@@ -31,6 +31,10 @@ binary_operator = { add | subtract | multiply | divide | modulo | and | or | equ
     or = { "||" }
     equals = { "==" }
     not_equals = { "!=" }
+    greater_than_equals = { ">=" }
+    less_than_equals = { "<=" }
+    greater_than = { ">" }
+    less_than = { "<" }
 
 unary_operator = { not | negate }
     not = { "!" }

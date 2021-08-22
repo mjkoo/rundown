@@ -7,7 +7,7 @@ use std::time;
 use anyhow::{anyhow, bail, Result};
 
 use crate::eval::{Builtin, Value};
-use crate::print_markdown;
+use crate::markdown::print_markdown;
 
 pub fn builtins() -> HashMap<String, Builtin> {
     let mut h: HashMap<String, Builtin> = HashMap::new();

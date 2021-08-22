@@ -6,7 +6,7 @@ use std::fs;
 use std::io::stdout;
 use std::path::PathBuf;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use indexmap::IndexMap;
 use lazy_static::lazy_static;
 use markdown::{Block, Span};
@@ -18,6 +18,8 @@ use syntect::parsing::SyntaxSet;
 
 mod ast;
 mod eval;
+
+use crate::eval::{Context, StatementResult};
 
 const INTRO_SECTION: &str = "intro";
 const RUNDOWN_CODE_BLOCK_SYNTAX: &str = "rundown";
@@ -94,17 +96,26 @@ fn main() -> Result<()> {
     let input = fs::read_to_string(&opt.input)?;
     let section_index = construct_index(&markdown::tokenize(&input));
 
-    let mut context: eval::Context = Default::default();
+    let mut context: Context = Default::default();
 
     let mut pc = 0;
-    while let Some((name, section)) = section_index.get_index(pc) {
+    'outer: while let Some((name, section)) = section_index.get_index(pc) {
         println!("{}", name);
         for block in section {
             match block {
                 Block::CodeBlock(Some(syntax), content) if syntax == RUNDOWN_CODE_BLOCK_SYNTAX => {
                     let statements = ast::parse(content)?;
                     let res = context.eval(&statements)?;
-                    println!("{:?}", &res);
+
+                    match res {
+                        StatementResult::Goto(label) => {
+                            pc = section_index.get_index_of(&label).ok_or_else(|| {
+                                anyhow!("Tried to goto section that does not exist")
+                            })?;
+                            continue 'outer;
+                        }
+                        _ => (),
+                    }
                 }
                 _ => {
                     let content = markdown::generate_markdown(vec![block.clone()]);

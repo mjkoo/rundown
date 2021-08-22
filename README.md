@@ -1,5 +1,9 @@
 # Rundown
 
+```rundown
+goto "fizzbuzz-code";
+```
+
 Rundown is a domain specific language for building Runnable Markdown. 
 
 The intent is to make a Literate programming language, where the whole program and text are interwoven in such as way that the code is legible. 
@@ -61,7 +65,7 @@ Which example would you like to see? [FizzBuzz/Hello World/Continue/End]
 ```rundown
 let response = read();
 if (response == "fizzbuzz") {
-    goto "fizzbuzz";
+    goto "fizzbuzz-example";
 } 
 
 if (response == "hello world") {
@@ -79,7 +83,7 @@ if (response == "end") {
 goto "examples-question";
 ```
 
-### FizzBuzz
+### FizzBuzz Example
 
 FizzBuzz can be trivially done using strings all in code. 
 However, the point of this language is to jump to points in a markdown file, and display it. 
@@ -93,33 +97,35 @@ This example works by jumping to a section, printing the text of that section, t
 #### FizzBuzz Code
 
 ```rundown
-let static counter = 0;
+let global counter = 0;
 counter = counter + 1;
 if (counter == 100) {
     sleep(5);
+    counter = 0;
     goto "examples-question";
 }
 
-if (counter % 3 == 0 and counter % 5 == 0) {
+if (((counter % 3) == 0) and ((counter % 5) == 0)) {
     goto "fizzbuzz";
 }
 
-if (counter % 3 ) {
+if ((counter % 3) == 0) {
     goto "fizz";
 }
 
-if (counter % 5 ) {
+if ((counter % 5)  == 0) {
     goto "buzz";
 }
 
 print(counter);
+goto "fizzbuzz-code";
 ```
 
 #### Fizz
 
 Fizz
 
-```rundown 
+```rundown
 goto "fizzbuzz-code";
 ```
 
@@ -127,7 +133,7 @@ goto "fizzbuzz-code";
 
 Buzz
 
-```rundown 
+```rundown
 goto "fizzbuzz-code";
 ```
 
@@ -135,11 +141,9 @@ goto "fizzbuzz-code";
 
 FizzBuzz
 
-
-```rundown 
+```rundown
 goto "fizzbuzz-code";
 ```
-
 
 ### Hello World
 

@@ -22,7 +22,7 @@ Your draw the officers attention.
 1. Look out the window
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     goto "insist-it-wasnt-you";
 } else {
@@ -46,7 +46,7 @@ The disgusted officer leaves the watercooler and heads back, face red in anger.
 1. Look out the window for the source of the sound
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     goto "head-down";
 } else {
@@ -69,7 +69,7 @@ Whatever is destorying those cars is headed this way.
 1. Watch the chaos unfold
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     goto "take-cover";
 } else {
@@ -91,7 +91,7 @@ The room errupts into chaos.
 1. Stay hidden
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     goto "jump-out-the-window";
 } else {
@@ -114,7 +114,7 @@ You feel something hot, and painful.
 It all goes black.
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     restart();
 }
@@ -134,7 +134,7 @@ You stagger, trying to move away before it attacks again.
 Your legs give out, and you collapse amongst the glass and debris.
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     restart();
 }
@@ -153,7 +153,7 @@ The cop arrives.
 
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     goto "yes-i-do";
 } else {
@@ -184,7 +184,7 @@ Suddenly the earth rends open and you and the police station fall deep into the 
 1. Restart
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     restart();
 }
@@ -206,7 +206,7 @@ The officer turns around sharply.
 1. Jump out the window
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     goto "first-aid";
 } else {
@@ -237,7 +237,7 @@ Days pass, and you are drifting in and out of conciousness.
 1. Restart
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     restart();
 }
@@ -255,7 +255,7 @@ You see a Police Car near your, tossed open.
 1. Search car for weapon
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     goto "search-for-first-aid";
 } else {
@@ -278,7 +278,7 @@ The officer fires.
 1. Restart
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     restart();
 }
@@ -298,7 +298,7 @@ You feel your fear rising.
 1. Drop gun and run
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     goto "fire-gun";
 } else {
@@ -315,7 +315,7 @@ The beast reacts violently.
 1. Restart
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "1") {
     restart();
 }

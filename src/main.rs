@@ -109,14 +109,11 @@ fn main() -> Result<()> {
                     let statements = ast::parse(content)?;
                     let res = context.eval(&statements)?;
 
-                    match res {
-                        StatementResult::Goto(label) => {
-                            pc = section_index.get_index_of(&label).ok_or_else(|| {
-                                anyhow!("Tried to goto section that does not exist")
-                            })?;
-                            continue 'outer;
-                        }
-                        _ => (),
+                    if let StatementResult::Goto(label) = res {
+                        pc = section_index
+                            .get_index_of(&label)
+                            .ok_or_else(|| anyhow!("Tried to goto section that does not exist"))?;
+                        continue 'outer;
                     }
                 }
                 _ => {

@@ -431,7 +431,7 @@ impl Context {
                     .ok_or_else(|| anyhow!("Attempted to call undefined function"))?;
 
                 let arguments = arguments
-                    .into_iter()
+                    .iter()
                     .map(|arg| self.eval_expression(&arg, local_variables, function))
                     .collect::<Result<Vec<_>>>()?;
 
@@ -449,7 +449,7 @@ impl Context {
                 let mut new_scope = parameters
                     .into_iter()
                     .zip(arguments.into_iter().map(move |arg| match arg {
-                        ExpressionResult::Value(v) => v.clone(),
+                        ExpressionResult::Value(v) => v,
                         _ => panic!("Encountered unexpected goto"),
                     }))
                     .collect::<Scope>();

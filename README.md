@@ -100,7 +100,7 @@ if (counter == 100) {
     goto "examples-question";
 }
 
-if (((counter % 3) == 0) && ((counter % 5) == 0)) {
+if (((counter % 3) == 0) && (counter % 5) == 0) {
     goto "fizzbuzz";
 }
 
@@ -204,6 +204,7 @@ Branching is done with if statements, and goto.
 #### If
 
 There are a few normal logical operators.
+However, When joining multiple expressions, if the left hand side is itself multiple expressions, it should be wrapped in parenthesis.
 
 * `||`
 * `&&`
@@ -222,8 +223,9 @@ if (a == 1) {
 
 ```
 let a = 1;
-if (a == 1 && b == 1) {
-    print("A and B are equal to 1");
+let b = 2;
+if ((b - 2) == 0) && a == 1) {
+    print("B - 2 is 0 and A is equal to 1");
 }
 ```
 

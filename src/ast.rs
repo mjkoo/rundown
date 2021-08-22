@@ -16,6 +16,10 @@ pub enum BinaryOperator {
     Or,
     Equals,
     NotEquals,
+    GreaterThan,
+    LessThan,
+    GreaterThanEquals,
+    LessThanEquals,
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
@@ -266,6 +270,10 @@ fn parse_operator_expression(
             Rule::or => BinaryOperator::Or,
             Rule::equals => BinaryOperator::Equals,
             Rule::not_equals => BinaryOperator::NotEquals,
+            Rule::greater_than_equals => BinaryOperator::GreaterThanEquals,
+            Rule::less_than_equals => BinaryOperator::LessThanEquals,
+            Rule::greater_than => BinaryOperator::GreaterThan,
+            Rule::less_than => BinaryOperator::LessThan,
             unknown_operator => panic!("Unknown operator: {:?}", unknown_operator),
         },
     }

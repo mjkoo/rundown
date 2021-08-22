@@ -8,7 +8,7 @@ use crate::ast::{BinaryOperator, Expression, ScopeSpecifier, Statement, UnaryOpe
 pub type Scope = HashMap<String, Value>;
 pub type Builtin = fn(&[Value]) -> Result<Value>;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
     Str(String),
     Int(i64),
@@ -405,6 +405,16 @@ impl Context {
                     BinaryOperator::NotEquals => {
                         Ok(ExpressionResult::Value(Value::Bool(lhs != rhs)))
                     }
+                    BinaryOperator::GreaterThanEquals => {
+                        Ok(ExpressionResult::Value(Value::Bool(lhs >= rhs)))
+                    }
+                    BinaryOperator::LessThanEquals => {
+                        Ok(ExpressionResult::Value(Value::Bool(lhs <= rhs)))
+                    }
+                    BinaryOperator::GreaterThan => {
+                        Ok(ExpressionResult::Value(Value::Bool(lhs > rhs)))
+                    }
+                    BinaryOperator::LessThan => Ok(ExpressionResult::Value(Value::Bool(lhs < rhs))),
                 }
             }
             Expression::UnaryExpression {

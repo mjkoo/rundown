@@ -7,6 +7,7 @@ use std::time;
 use anyhow::{anyhow, bail, Result};
 
 use crate::eval::{Builtin, Value};
+use crate::print_markdown;
 
 pub fn builtins() -> HashMap<String, Builtin> {
     let mut h: HashMap<String, Builtin> = HashMap::new();
@@ -17,14 +18,12 @@ pub fn builtins() -> HashMap<String, Builtin> {
 }
 
 fn print(arguments: &[Value]) -> Result<Value> {
-    println!(
-        "{}",
-        arguments
-            .iter()
-            .map(|arg| arg.to_string())
-            .collect::<Vec<_>>()
-            .join(" ")
-    );
+    let output = arguments
+        .iter()
+        .map(|arg| arg.to_string())
+        .collect::<Vec<_>>()
+        .join(" ");
+    print_markdown(&output[..])?;
     Ok(Value::Bool(true))
 }
 

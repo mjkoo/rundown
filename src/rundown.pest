@@ -21,12 +21,12 @@ scope = { global_var | static_var | var }
     static_var = { "let" ~ "static" }
     var = { "let" }
 
-binary_operator = { add | subtract | multiply | divide | remainder | and | or | equals | not_equals }
+binary_operator = { add | subtract | multiply | divide | modulo | and | or | equals | not_equals }
     add = { "+" }
     subtract = { "-" }
     multiply = { "*" }
     divide = { "/" }
-    remainder = { "%" }
+    modulo = { "%" }
     and = { "and" }
     or = { "or" }
     equals = { "==" }
@@ -47,7 +47,7 @@ statement = { declare ~ semicolon | assignment ~ semicolon | if_statement | func
     declare = { scope ~ ident ~ "=" ~ expression }
     assignment = { ident ~ "=" ~ expression }
     if_statement = { "if" ~ open_paren ~ expression ~ close_paren ~ open_curly ~ list_statement ~ close_curly ~ else_statement? }
-        else_statement = { "else" ~ open_curly ~ list_statement ~ close_curly } 
+        else_statement = { "else" ~ open_curly ~ list_statement ~ close_curly }
     function_definition = { "fun" ~ ident ~ open_paren ~ parameters ~ close_paren ~ open_curly ~ list_statement ~ close_curly }
         parameters = { (ident ~ ("," ~ ident)*)? }
     goto_statement = { "goto" ~ expression }

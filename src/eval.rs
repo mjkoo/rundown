@@ -82,7 +82,7 @@ impl Value {
         Err(anyhow!("Type error"))
     }
 
-    fn remainder(&self, other: Value) -> Result<Value> {
+    fn modulo(&self, other: Value) -> Result<Value> {
         if let Value::Int(a) = self {
             if let Value::Int(b) = other {
                 return Ok(Value::Int(a % b));
@@ -398,7 +398,7 @@ impl Context {
                     BinaryOperator::Subtract => Ok(ExpressionResult::Value(lhs.subtract(rhs)?)),
                     BinaryOperator::Multiply => Ok(ExpressionResult::Value(lhs.multiply(rhs)?)),
                     BinaryOperator::Divide => Ok(ExpressionResult::Value(lhs.divide(rhs)?)),
-                    BinaryOperator::Remainder => Ok(ExpressionResult::Value(lhs.remainder(rhs)?)),
+                    BinaryOperator::Modulo => Ok(ExpressionResult::Value(lhs.modulo(rhs)?)),
                     BinaryOperator::And => Ok(ExpressionResult::Value(lhs.and(rhs)?)),
                     BinaryOperator::Or => Ok(ExpressionResult::Value(lhs.or(rhs)?)),
                     BinaryOperator::Equals => Ok(ExpressionResult::Value(Value::Bool(lhs == rhs))),

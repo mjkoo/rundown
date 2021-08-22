@@ -11,7 +11,7 @@ Would you like to hear more about Rundown? [Yes/No]
 ```rundown
 var response = read();
 if (response == "no") {
-    goto "end";;;;
+    goto "end";
 } 
 if (response == "yes" ) {
     goto "first-class-coments";

@@ -86,43 +86,9 @@ FizzBuzz can be trivially done using strings all in code.
 However, the point of this language is to jump to points in a markdown file, and display it. 
 In this example, we have 3 different headings: Fizz, Buzz, and FizzBuzz.
 The code will execute in a goto loop, jumping into the categories and printing the labels. 
-The source for fizz buzz is as follows. 
-
-```
-static var counter = 0;
-counter = counter + 1;
-if (counter == 100) {
-    sleep(5);
-    goto "examples-question"
-}
-
-if (counter % 3 == 0 and counter % 5 == 0) {
-    goto "fizzbuzz";
-}
-
-if (counter % 3 ) {
-    goto "fizz";
-}
-
-if (counter % 5 ) {
-    goto "buzz";
-}
-
-print(counter);
-```
 
 The static variable is only set once in a code block, even if that code block is executed multiple times. 
 This example works by jumping to a section, printing the text of that section, then jumping back.
-
-
-### Fake Fizz
-
-```
-goto "fizzbuzz-code"
-```
-
-Let's see it in action.
-
 
 
 #### FizzBuzz Code
@@ -182,10 +148,6 @@ There are two ways to do Hello World.
 The First is to recognize Rundown programs are Markdown, and simply write `hello world` in a markdown document. 
 That is a bit simplistic, let's print it from a rundown code block. 
 
-```
-print("hello world");
-```
-
 ```rundown
 print("hello world");
 ```
@@ -193,10 +155,6 @@ print("hello world");
 We can even print valid markdown!
 
 > Note: You cannot print headings, then goto them
-
-```
-print("**hello world**");
-```
 
 ```rundown
 print("**Hello World**");
@@ -212,21 +170,20 @@ goto "examples-question";
 
 ## Features
 
-The Rundown language is simple. 
+The Rundown language is fairly simple.
 
 Let's walk through how to use it.
 
 ### Writing rundown
 
-Rundown is written in Markdown code blocks. 
+Rundown is written in Markdown code blocks.
+Just add the `rundown` to the code block info string.
 
-```
+
+```rundown
 var a = 1;
 print(a);
 ```
-
-To make the code blocks executable, pass the language name, rundown. 
-> ```rundown 
 
 
 ### Variables
@@ -260,6 +217,7 @@ There are a few normal logical operators.
 
 
 ```
+var a = 1;
 if (a == 1) {
     print("A is 1");
 } else {
@@ -268,6 +226,7 @@ if (a == 1) {
 ```
 
 ```
+var a = 1;
 if (a == 1 and b == 1) {
     print("A and B are equal to 1"_;
 }

@@ -27,13 +27,13 @@ binary_operator = { add | subtract | multiply | divide | remainder | and | or | 
     multiply = { "*" }
     divide = { "/" }
     remainder = { "%" }
-    and = { "and" }
-    or = { "or" }
+    and = { "&&" }
+    or = { "||" }
     equals = { "==" }
     not_equals = { "!=" }
 
 unary_operator = { not | negate }
-    not = { "not" }
+    not = { "!" }
     negate = { "-" }
 
 expression = { binary_expression | unary_expression | function_call | term }
@@ -47,7 +47,7 @@ statement = { declare ~ semicolon | assignment ~ semicolon | if_statement | func
     declare = { scope ~ ident ~ "=" ~ expression }
     assignment = { ident ~ "=" ~ expression }
     if_statement = { "if" ~ open_paren ~ expression ~ close_paren ~ open_curly ~ list_statement ~ close_curly ~ else_statement? }
-        else_statement = { "else" ~ open_curly ~ list_statement ~ close_curly } 
+        else_statement = { "else" ~ open_curly ~ list_statement ~ close_curly }
     function_definition = { "fun" ~ ident ~ open_paren ~ parameters ~ close_paren ~ open_curly ~ list_statement ~ close_curly }
         parameters = { (ident ~ ("," ~ ident)*)? }
     goto_statement = { "goto" ~ expression }

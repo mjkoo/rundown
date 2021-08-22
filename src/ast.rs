@@ -137,6 +137,9 @@ fn build_statement_from_pair(pair: pest::iterators::Pair<Rule>) -> Statement {
                     Rule::else_statement => Some(
                         else_pair
                             .into_inner()
+                            .next()
+                            .unwrap()
+                            .into_inner()
                             .map(build_statement_from_pair)
                             .collect(),
                     ),

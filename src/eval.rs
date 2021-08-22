@@ -6,6 +6,7 @@ use anyhow::{anyhow, bail, Result};
 use crate::ast::{BinaryOperator, Expression, ScopeSpecifier, Statement, UnaryOperator};
 
 pub type Scope = HashMap<String, Value>;
+pub type Builtin = fn(&[Value]) -> Result<Value>;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
@@ -133,11 +134,11 @@ pub struct FunctionContext {
 pub struct Context {
     global_variables: Scope,
     function_contexts: HashMap<String, FunctionContext>,
-    builtins: HashMap<String, fn(&[Value]) -> Value>,
+    builtins: HashMap<String, Builtin>,
 }
 
 impl Context {
-    pub fn new(builtins: HashMap<String, fn(&[Value]) -> Value>) -> Self {
+    pub fn new(builtins: HashMap<String, Builtin>) -> Self {
         Self {
             global_variables: Default::default(),
             function_contexts: Default::default(),
@@ -424,20 +425,10 @@ impl Context {
                 }
             }
             Expression::FunctionCall { name, arguments } => {
-                let (statements, parameters) = self
-                    .function_contexts
-                    .get(name)
-                    .map(|ctx| (ctx.statements.clone(), ctx.parameters.clone()))
-                    .ok_or_else(|| anyhow!("Attempted to call undefined function"))?;
-
                 let arguments = arguments
                     .iter()
                     .map(|arg| self.eval_expression(&arg, local_variables, function))
                     .collect::<Result<Vec<_>>>()?;
-
-                if arguments.len() != parameters.len() {
-                    bail!("Incorrect number of parameters to function");
-                }
 
                 // Check for early goto
                 for arg in arguments.iter() {
@@ -446,20 +437,39 @@ impl Context {
                     }
                 }
 
-                let mut new_scope = parameters
-                    .into_iter()
-                    .zip(arguments.into_iter().map(move |arg| match arg {
-                        ExpressionResult::Value(v) => v,
+                let arguments: Vec<_> = arguments
+                    .iter()
+                    .map(|arg| match arg {
+                        ExpressionResult::Value(v) => v.clone(),
                         _ => panic!("Encountered unexpected goto"),
-                    }))
-                    .collect::<Scope>();
+                    })
+                    .collect();
 
-                match self.eval_statements(&statements, &mut new_scope, &Some(name.clone()))? {
-                    StatementResult::Goto(s) => Ok(ExpressionResult::Goto(s)),
-                    StatementResult::Return(v) => Ok(ExpressionResult::Value(v)),
-                    // TOOD: We don't have a void type, so if we don't return from a function make
-                    // this equivalent to return false
-                    _ => Ok(ExpressionResult::Value(Value::Bool(false))),
+                if let Some(builtin) = self.builtins.get(name) {
+                    Ok(ExpressionResult::Value(builtin(&arguments)?))
+                } else {
+                    let (statements, parameters) = self
+                        .function_contexts
+                        .get(name)
+                        .map(|ctx| (ctx.statements.clone(), ctx.parameters.clone()))
+                        .ok_or_else(|| anyhow!("Attempted to call undefined function"))?;
+
+                    if arguments.len() != parameters.len() {
+                        bail!("Incorrect number of parameters to function");
+                    }
+
+                    let mut new_scope = parameters
+                        .into_iter()
+                        .zip(arguments.into_iter())
+                        .collect::<Scope>();
+
+                    match self.eval_statements(&statements, &mut new_scope, &Some(name.clone()))? {
+                        StatementResult::Goto(s) => Ok(ExpressionResult::Goto(s)),
+                        StatementResult::Return(v) => Ok(ExpressionResult::Value(v)),
+                        // TOOD: We don't have a void type, so if we don't return from a function make
+                        // this equivalent to return false
+                        _ => Ok(ExpressionResult::Value(Value::Bool(false))),
+                    }
                 }
             }
         }

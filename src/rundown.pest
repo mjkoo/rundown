@@ -17,9 +17,9 @@ close_curly = _{ "}" }
 ident = @{ ASCII_ALPHA ~ ASCII_ALPHANUMERIC* }
 
 scope = { global_var | static_var | var }
-    global_var = { "global" ~ "var" }
-    static_var = { "static" ~ "var" }
-    var = { "var" }
+    global_var = { "let" ~ "global" }
+    static_var = { "let" ~ "static" }
+    var = { "let" }
 
 binary_operator = { add | subtract | multiply | divide | remainder | and | or | equals | not_equals }
     add = { "+" }

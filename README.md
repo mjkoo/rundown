@@ -105,15 +105,15 @@ if (counter == 100) {
     goto "examples-question";
 }
 
-if (((counter % 3) == 0) and ((counter % 5) == 0)) {
+if (( counter % 3 ) == 0 and (counter % 5) == 0) {
     goto "fizzbuzz";
 }
 
-if ((counter % 3) == 0) {
+if ( ( counter % 3 ) == 0 ) {
     goto "fizz";
 }
 
-if ((counter % 5)  == 0) {
+if ( ( counter % 5 )  == 0 ) {
     goto "buzz";
 }
 

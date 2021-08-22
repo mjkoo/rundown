@@ -3,14 +3,11 @@
 ```rundown
 let global i = 0;
 i = i + 1;
-print(i);
 
 if (i == 100) {
     sleep(5);
     goto "end";
 }
-
-print(i);
 
 if (((i % 3) == 0) and ((i % 5) == 0)) {
     goto "fizzbuzz";

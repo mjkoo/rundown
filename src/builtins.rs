@@ -41,7 +41,7 @@ fn read(_arguments: &[Value]) -> Result<Value> {
     } else if let Ok(i) = buffer.parse::<i64>() {
         Ok(Value::Int(i))
     } else {
-        Ok(Value::Str(buffer))
+        Ok(Value::Str(String::from(buffer.trim()).to_lowercase()))
     }
 }
 

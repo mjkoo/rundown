@@ -18,8 +18,8 @@ use syntect::parsing::SyntaxSet;
 
 mod ast;
 
-const INTRO_SECTION: &'static str = "intro";
-const RUNDOWN_CODE_BLOCK_SYNTAX: &'static str = "rundown";
+const INTRO_SECTION: &str = "intro";
+const RUNDOWN_CODE_BLOCK_SYNTAX: &str = "rundown";
 
 lazy_static! {
     static ref MDCAT_SETTINGS: Settings = Settings {
@@ -94,28 +94,22 @@ fn main() -> Result<()> {
     let section_index = construct_index(&markdown::tokenize(&input));
 
     let mut pc = 0;
-    loop {
-        if let Some((name, section)) = section_index.get_index(pc) {
-            println!("{}", name);
-            for block in section {
-                match block {
-                    Block::CodeBlock(Some(syntax), content)
-                        if syntax == RUNDOWN_CODE_BLOCK_SYNTAX =>
-                    {
-                        let statements = ast::parse(content)?;
-                        println!("{:#?}", &statements);
-                    }
-                    _ => {
-                        let content = markdown::generate_markdown(vec![block.clone()]);
-                        print_markdown(&content)?;
-                    }
+    while let Some((name, section)) = section_index.get_index(pc) {
+        println!("{}", name);
+        for block in section {
+            match block {
+                Block::CodeBlock(Some(syntax), content) if syntax == RUNDOWN_CODE_BLOCK_SYNTAX => {
+                    let statements = ast::parse(content)?;
+                    println!("{:#?}", &statements);
+                }
+                _ => {
+                    let content = markdown::generate_markdown(vec![block.clone()]);
+                    print_markdown(&content)?;
                 }
             }
-
-            pc += 1;
-        } else {
-            break;
         }
+
+        pc += 1;
     }
 
     Ok(())

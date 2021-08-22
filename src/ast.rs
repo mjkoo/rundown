@@ -77,20 +77,17 @@ pub enum Statement {
     Return(Box<Expression>),
 }
 
-pub fn parse(source: &str) -> Result<Vec<Box<Statement>>> {
+pub fn parse(source: &str) -> Result<Vec<Statement>> {
     let mut ast = vec![];
 
     let pairs = LanguageParser::parse(Rule::language, source)?;
     for pair in pairs {
-        match pair.as_rule() {
-            Rule::language => {
-                for statement in pair.into_inner() {
-                    ast.push(Box::new(build_statement_from_pair(
-                        statement.into_inner().next().unwrap(),
-                    )));
-                }
+        if pair.as_rule() == Rule::language {
+            for statement in pair.into_inner() {
+                ast.push(build_statement_from_pair(
+                    statement.into_inner().next().unwrap(),
+                ));
             }
-            _ => {}
         }
     }
     Ok(ast)
@@ -226,7 +223,7 @@ fn get_expression_from_pair(pair: pest::iterators::Pair<Rule>) -> Expression {
             let str = &pair.as_str();
             let str = &str[1..str.len() - 1];
             let str = str.replace("''", "'");
-            Expression::Str(String::from(str))
+            Expression::Str(str)
         }
         Rule::ident => {
             let str = pair.as_str();

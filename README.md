@@ -41,7 +41,7 @@ if (response == "end") {
     goto "end";
 }
 
-goto "first-class-question"
+goto "first-class-question";
 
 ```
 
@@ -52,12 +52,6 @@ Rundown can jump to anywhere in the document.
 Let's look at a couple of examples.
 
 #### Examples Question
-
-You have been here ```rundown let static counter = 0; counter = counter + 1; print(counter);``` times
-
-You have been here 
-```rundown let static counter = 0; counter = counter + 1; print(counter);``` 
-times
 
 Which example would you like to see? [FizzBuzz/Hello World/Continue/End]
 
@@ -79,7 +73,7 @@ if (response == "end") {
     goto "end";
 }
 
-goto "examples-question"
+goto "examples-question";
 ```
 
 ### FizzBuzz
@@ -100,7 +94,7 @@ let static counter = 0;
 counter = counter + 1;
 if (counter == 100) {
     sleep(5);
-    goto "examples-question"
+    goto "examples-question";
 }
 
 if (counter % 3 == 0 and counter % 5 == 0) {

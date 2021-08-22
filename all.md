@@ -32,10 +32,14 @@ result = 2 + 2;
 global var foo = "bar";
 global var a = 1;
 
+fun doit() {
+    goto "another-header-i-guess";
+}
+
 var b = a + 1;
 a = a + 1;
 
 if (b == 2) {
-    goto "another-header-i-guess";
+    doit();
 }
 ```

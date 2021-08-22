@@ -122,17 +122,28 @@ impl fmt::Display for Value {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct FunctionContext {
     parameters: Vec<String>,
     statements: Vec<Statement>,
     static_variables: Scope,
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone)]
 pub struct Context {
     global_variables: Scope,
     function_contexts: HashMap<String, FunctionContext>,
+    builtins: HashMap<String, fn(&[Value]) -> Value>,
+}
+
+impl Context {
+    pub fn new(builtins: HashMap<String, fn(&[Value]) -> Value>) -> Self {
+        Self {
+            global_variables: Default::default(),
+            function_contexts: Default::default(),
+            builtins,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -151,17 +162,17 @@ pub enum ExpressionResult {
 impl Context {
     pub fn eval(&mut self, statements: &[Statement]) -> Result<StatementResult> {
         let mut local_variables: Scope = Default::default();
-        self.eval_statements(statements, &mut local_variables, &mut None)
+        self.eval_statements(statements, &mut local_variables, &None)
     }
 
     fn eval_statements(
         &mut self,
         statements: &[Statement],
         local_variables: &mut Scope,
-        function_context: &mut Option<FunctionContext>,
+        function: &Option<String>,
     ) -> Result<StatementResult> {
         for statement in statements {
-            match self.eval_statement(statement, local_variables, function_context) {
+            match self.eval_statement(statement, local_variables, function) {
                 Ok(StatementResult::Continue) => (),
                 exit => {
                     return exit;
@@ -176,11 +187,11 @@ impl Context {
         &mut self,
         statement: &Statement,
         local_variables: &mut Scope,
-        function_context: &mut Option<FunctionContext>,
+        function: &Option<String>,
     ) -> Result<StatementResult> {
         match statement {
             Statement::Goto(expression) => {
-                match self.eval_expression(&*expression, local_variables, function_context)? {
+                match self.eval_expression(&*expression, local_variables, function)? {
                     ExpressionResult::Value(Value::Str(s)) => return Ok(StatementResult::Goto(s)),
                     ExpressionResult::Goto(s) => {
                         return Ok(StatementResult::Goto(s));
@@ -199,7 +210,7 @@ impl Context {
                     return Ok(StatementResult::Continue);
                 }
 
-                match self.eval_expression(expression, local_variables, function_context)? {
+                match self.eval_expression(expression, local_variables, function)? {
                     ExpressionResult::Value(v) => {
                         self.global_variables.insert(name.clone(), v);
                     }
@@ -213,22 +224,27 @@ impl Context {
                 name,
                 expression,
             } => {
-                if function_context.is_none() {
+                if function.is_none() {
                     bail!("Attempted to define a static variable outside of a function context");
                 }
 
-                if function_context
+                if function
                     .as_ref()
+                    .and_then(|f| self.function_contexts.get(f))
                     .map_or(false, |ctx| ctx.static_variables.contains_key(name))
                 {
                     return Ok(StatementResult::Continue);
                 }
 
-                match self.eval_expression(expression, local_variables, function_context)? {
+                match self.eval_expression(expression, local_variables, function)? {
                     ExpressionResult::Value(v) => {
-                        function_context
-                            .as_mut()
-                            .and_then(|ctx| ctx.static_variables.insert(name.clone(), v));
+                        function.as_ref().and_then(|f| {
+                            self.function_contexts
+                                .get_mut(f)
+                                .unwrap()
+                                .static_variables
+                                .insert(name.clone(), v)
+                        });
                     }
                     ExpressionResult::Goto(s) => {
                         return Ok(StatementResult::Goto(s));
@@ -244,7 +260,7 @@ impl Context {
                     bail!("Attemped to redefine local variable");
                 }
 
-                match self.eval_expression(expression, local_variables, function_context)? {
+                match self.eval_expression(expression, local_variables, function)? {
                     ExpressionResult::Value(v) => {
                         local_variables.insert(name.clone(), v);
                     }
@@ -256,19 +272,19 @@ impl Context {
             Statement::Assignment { name, expression } => {
                 // TODO: If this expression contains a function call which has side effects,
                 // but the assignment fails, this will still perform the side-effects.
-                let value =
-                    match self.eval_expression(expression, local_variables, function_context)? {
-                        ExpressionResult::Value(v) => v,
-                        ExpressionResult::Goto(s) => {
-                            return Ok(StatementResult::Goto(s));
-                        }
-                    };
+                let value = match self.eval_expression(expression, local_variables, function)? {
+                    ExpressionResult::Value(v) => v,
+                    ExpressionResult::Goto(s) => {
+                        return Ok(StatementResult::Goto(s));
+                    }
+                };
                 if let Some(v) = local_variables.get_mut(name) {
                     *v = value;
-                } else if let Some(v) = function_context
-                    .as_mut()
-                    .and_then(|ctx| ctx.static_variables.get_mut(name))
-                {
+                } else if let Some(v) = function.as_ref().and_then(|f| {
+                    self.function_contexts
+                        .get_mut(f)
+                        .and_then(|ctx| ctx.static_variables.get_mut(name))
+                }) {
                     *v = value;
                 } else if let Some(v) = self.global_variables.get_mut(name) {
                     *v = value;
@@ -282,7 +298,7 @@ impl Context {
                 else_statements,
             } => {
                 let conditional =
-                    match self.eval_expression(conditional, local_variables, function_context)? {
+                    match self.eval_expression(conditional, local_variables, function)? {
                         ExpressionResult::Value(v) => v.as_bool(),
                         ExpressionResult::Goto(s) => {
                             return Ok(StatementResult::Goto(s));
@@ -290,13 +306,9 @@ impl Context {
                     };
 
                 if conditional {
-                    return self.eval_statements(statements, local_variables, function_context);
+                    return self.eval_statements(statements, local_variables, function);
                 } else if let Some(else_statements) = else_statements {
-                    return self.eval_statements(
-                        else_statements,
-                        local_variables,
-                        function_context,
-                    );
+                    return self.eval_statements(else_statements, local_variables, function);
                 }
             }
             Statement::FunctionDefinition {
@@ -304,7 +316,7 @@ impl Context {
                 parameters,
                 statements,
             } => {
-                if function_context.is_some() {
+                if function.is_some() {
                     bail!("Attempted to define a function within a function context");
                 }
 
@@ -319,20 +331,19 @@ impl Context {
             }
             Statement::Expression(expression) => {
                 if let ExpressionResult::Goto(s) =
-                    self.eval_expression(expression, local_variables, function_context)?
+                    self.eval_expression(expression, local_variables, function)?
                 {
                     return Ok(StatementResult::Goto(s));
                 }
             }
             Statement::Return(expression) => {
-                match self.eval_expression(expression, local_variables, function_context)? {
+                match self.eval_expression(expression, local_variables, function)? {
                     ExpressionResult::Value(v) => return Ok(StatementResult::Return(v)),
                     ExpressionResult::Goto(s) => {
                         return Ok(StatementResult::Goto(s));
                     }
                 }
             }
-            _ => (),
         }
 
         Ok(StatementResult::Continue)
@@ -342,7 +353,7 @@ impl Context {
         &mut self,
         expression: &Expression,
         local_variables: &mut Scope,
-        function_context: &mut Option<FunctionContext>,
+        function: &Option<String>,
     ) -> Result<ExpressionResult> {
         match expression {
             Expression::Str(s) => Ok(ExpressionResult::Value(Value::Str(s.clone()))),
@@ -351,10 +362,11 @@ impl Context {
             Expression::Ident(name) => {
                 if let Some(v) = local_variables.get(name) {
                     Ok(ExpressionResult::Value(v.clone()))
-                } else if let Some(v) = function_context
-                    .as_ref()
-                    .and_then(|ctx| ctx.static_variables.get(name))
-                {
+                } else if let Some(v) = function.as_ref().and_then(|f| {
+                    self.function_contexts
+                        .get(f)
+                        .and_then(|ctx| ctx.static_variables.get(name))
+                }) {
                     Ok(ExpressionResult::Value(v.clone()))
                 } else if let Some(v) = self.global_variables.get(name) {
                     Ok(ExpressionResult::Value(v.clone()))
@@ -367,13 +379,13 @@ impl Context {
                 left,
                 right,
             } => {
-                let lhs = match self.eval_expression(left, local_variables, function_context)? {
+                let lhs = match self.eval_expression(left, local_variables, function)? {
                     ExpressionResult::Value(v) => v,
                     goto => {
                         return Ok(goto);
                     }
                 };
-                let rhs = match self.eval_expression(right, local_variables, function_context)? {
+                let rhs = match self.eval_expression(right, local_variables, function)? {
                     ExpressionResult::Value(v) => v,
                     goto => {
                         return Ok(goto);
@@ -399,7 +411,7 @@ impl Context {
                 expression,
             } => {
                 let expression =
-                    match self.eval_expression(expression, local_variables, function_context)? {
+                    match self.eval_expression(expression, local_variables, function)? {
                         ExpressionResult::Value(v) => v,
                         goto => {
                             return Ok(goto);
@@ -411,7 +423,45 @@ impl Context {
                     UnaryOperator::Negate => Ok(ExpressionResult::Value(expression.negate()?)),
                 }
             }
-            _ => Err(anyhow!("foo")),
+            Expression::FunctionCall { name, arguments } => {
+                let (statements, parameters) = self
+                    .function_contexts
+                    .get(name)
+                    .map(|ctx| (ctx.statements.clone(), ctx.parameters.clone()))
+                    .ok_or_else(|| anyhow!("Attempted to call undefined function"))?;
+
+                let arguments = arguments
+                    .into_iter()
+                    .map(|arg| self.eval_expression(&arg, local_variables, function))
+                    .collect::<Result<Vec<_>>>()?;
+
+                if arguments.len() != parameters.len() {
+                    bail!("Incorrect number of parameters to function");
+                }
+
+                // Check for early goto
+                for arg in arguments.iter() {
+                    if let ExpressionResult::Goto(s) = arg {
+                        return Ok(ExpressionResult::Goto(s.clone()));
+                    }
+                }
+
+                let mut new_scope = parameters
+                    .into_iter()
+                    .zip(arguments.into_iter().map(move |arg| match arg {
+                        ExpressionResult::Value(v) => v.clone(),
+                        _ => panic!("Encountered unexpected goto"),
+                    }))
+                    .collect::<Scope>();
+
+                match self.eval_statements(&statements, &mut new_scope, &Some(name.clone()))? {
+                    StatementResult::Goto(s) => Ok(ExpressionResult::Goto(s)),
+                    StatementResult::Return(v) => Ok(ExpressionResult::Value(v)),
+                    // TOOD: We don't have a void type, so if we don't return from a function make
+                    // this equivalent to return false
+                    _ => Ok(ExpressionResult::Value(Value::Bool(false))),
+                }
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate pest_derive;
 
+use std::collections::HashMap;
 use std::env;
 use std::fs;
 use std::io::stdout;
@@ -19,7 +20,7 @@ use syntect::parsing::SyntaxSet;
 mod ast;
 mod eval;
 
-use crate::eval::{Context, StatementResult};
+use crate::eval::{Context, StatementResult, Value};
 
 const INTRO_SECTION: &str = "intro";
 const RUNDOWN_CODE_BLOCK_SYNTAX: &str = "rundown";
@@ -96,7 +97,8 @@ fn main() -> Result<()> {
     let input = fs::read_to_string(&opt.input)?;
     let section_index = construct_index(&markdown::tokenize(&input));
 
-    let mut context: Context = Default::default();
+    let builtins: HashMap<String, fn(&[Value]) -> Value> = HashMap::new();
+    let mut context = Context::new(builtins);
 
     let mut pc = 0;
     'outer: while let Some((name, section)) = section_index.get_index(pc) {

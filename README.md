@@ -17,7 +17,7 @@ if (response == "no") {
 } 
 
 if (response == "yes" ) {
-    goto "first-class-coments";
+    goto "first-class-comments";
 }
 
 goto "rundown-question";
@@ -58,7 +58,7 @@ Let's look at a couple of examples.
 
 Which example would you like to see? [FizzBuzz/Hello World/Continue/End]
 
-``` rundown
+```rundown
 let response = read();
 if (response == "fizzbuzz") {
     goto "fizzbuzz";

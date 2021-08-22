@@ -43,6 +43,12 @@ What *if* **everyone** used ***this*** library? I think that would be pretty coo
 Well, maybe they shouldn't since it is a `naive` implementation.
 
 ```rundown
-let mut result = 0;
-result = 2 + 2;
+global var foo = "bar";
+if (1) {
+    print("baz");
+} else {
+    print("quux");
+}
+
+goto intro;
 ```

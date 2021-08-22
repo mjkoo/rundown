@@ -51,7 +51,7 @@ Let's look at a couple of examples.
 
 #### Examples Question
 
-You have been here ```static var counter = 0; counter = counter + 1; print(counter);``` times
+You have been here ```rundown static var counter = 0; counter = counter + 1; print(counter);``` times
 
 You have been here 
 ```rundown static var counter = 0; counter = counter + 1; print(counter);``` 

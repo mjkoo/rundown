@@ -15,7 +15,8 @@ close_paren = _{ ")" }
 open_curly = _{ "{" }
 close_curly = _{ "}" }
 ident = @{ ASCII_ALPHA ~ ASCII_ALPHANUMERIC* }
-pattern = { global_var | static_var | var }
+
+scope = { global_var | static_var | var }
     global_var = { "global" ~ "var" }
     static_var = { "static" ~ "var" }
     var = { "var" }
@@ -42,7 +43,7 @@ expression = { operator_expression | unary_expression | function_call | term }
     term = { int | string | boolean | ident | open_paren ~ expression ~ close_paren }
 
 statement = { declare ~ semicolon | assignment ~ semicolon | if_statement | function_definition | goto_statement ~ semicolon | return_statement ~ semicolon | expression ~ semicolon }
-    declare = { pattern ~ ident ~ "=" ~ expression }
+    declare = { scope ~ ident ~ "=" ~ expression }
     assignment = { ident ~ "=" ~ expression }
     if_statement = { "if" ~ open_paren ~ expression ~ close_paren ~ open_curly ~ list_statement ~ close_curly ~ else_statement? }
         else_statement = { "else" ~ open_curly ~ list_statement ~ close_curly } 

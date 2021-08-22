@@ -2,7 +2,7 @@ use anyhow::Result;
 use pest::Parser;
 
 #[derive(Parser)]
-#[grammar = "code.pest"]
+#[grammar = "rundown.pest"]
 pub struct LanguageParser;
 
 #[derive(PartialEq, Eq, Debug, Clone)]
@@ -45,17 +45,17 @@ pub enum Expression {
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
-pub enum Pattern {
+pub enum Scope {
     Global,
     Static,
-    Var,
+    Local,
 }
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum Statement {
     Goto(Box<Expression>),
     Declare {
-        pattern: Box<Pattern>,
+        scope: Scope,
         name: String,
         expression: Box<Expression>,
     },
@@ -68,7 +68,7 @@ pub enum Statement {
         statements: Vec<Statement>,
         else_statements: Option<Vec<Statement>>,
     },
-    Function {
+    FunctionDefinition {
         name: String,
         parameters: Vec<String>,
         statements: Vec<Statement>,
@@ -116,7 +116,7 @@ fn build_statement_from_pair(pair: pest::iterators::Pair<Rule>) -> Statement {
                 .into_inner()
                 .map(build_statement_from_pair)
                 .collect();
-            Statement::Function {
+            Statement::FunctionDefinition {
                 name,
                 parameters,
                 statements,
@@ -166,19 +166,19 @@ fn build_statement_from_pair(pair: pest::iterators::Pair<Rule>) -> Statement {
         }
         Rule::declare => {
             let mut pair = pair.into_inner();
-            let pattern_pair = pair.next().unwrap();
-            let pattern = match pattern_pair.into_inner().next().unwrap().as_rule() {
-                Rule::global_var => Pattern::Global,
-                Rule::static_var => Pattern::Static,
-                Rule::var => Pattern::Var,
-                unknown_pattern => panic!("Unkown pattern: {:?}", unknown_pattern),
+            let scope_pair = pair.next().unwrap();
+            let scope = match scope_pair.into_inner().next().unwrap().as_rule() {
+                Rule::global_var => Scope::Global,
+                Rule::static_var => Scope::Static,
+                Rule::var => Scope::Local,
+                unknown_pattern => panic!("Unknown pattern: {:?}", unknown_pattern),
             };
             let name_pair = pair.next().unwrap();
             let name = get_ident_from_pair(name_pair);
             let expression_pair = pair.next().unwrap();
             let expression = Box::new(get_expression_from_pair(expression_pair));
             Statement::Declare {
-                pattern: Box::new(pattern),
+                scope,
                 name,
                 expression,
             }
@@ -261,7 +261,7 @@ fn parse_operator_expression(
             Rule::and => Operator::And,
             Rule::or => Operator::Or,
             Rule::equals => Operator::Equals,
-            unknown_operator => panic!("Unkown operator: {:?}", unknown_operator),
+            unknown_operator => panic!("Unknown operator: {:?}", unknown_operator),
         },
     }
 }
@@ -275,7 +275,7 @@ fn parse_unary_operator_expression(
         operator: match operator_pair.into_inner().next().unwrap().as_rule() {
             Rule::not => UnaryOperator::Not,
             Rule::negative => UnaryOperator::Negative,
-            unknown_operator => panic!("Unkown unary operator: {:?}", unknown_operator),
+            unknown_operator => panic!("Unknown unary operator: {:?}", unknown_operator),
         },
     }
 }

@@ -17,6 +17,7 @@ use structopt::StructOpt;
 use syntect::parsing::SyntaxSet;
 
 mod ast;
+mod eval;
 
 const INTRO_SECTION: &str = "intro";
 const RUNDOWN_CODE_BLOCK_SYNTAX: &str = "rundown";

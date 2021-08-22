@@ -617,12 +617,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ngrammatic"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b79e6be1c04bda2ef26e4258fb09ee3675519ba5f60dc9c80bfd559fdaa08188"
-
-[[package]]
 name = "num-integer"
 version = "0.1.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -920,7 +914,6 @@ dependencies = [
  "lazy_static",
  "markdown",
  "mdcat",
- "ngrammatic",
  "pest",
  "pest_derive",
  "pulldown-cmark",

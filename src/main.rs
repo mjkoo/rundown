@@ -32,8 +32,6 @@ fn main() -> Result<()> {
     let input = fs::read_to_string(&opt.input)?;
     let section_index = construct_index(&input);
 
-    println!("{:?}", section_index.keys());
-
     let mut context = Context::new(builtins());
 
     let mut pc = 0;

@@ -24,9 +24,9 @@ Your draw the officers attention.
 ```rundown
 var response = read();
 if (response == "1") {
-    goto "insist-it-wasnt-you"
+    goto "insist-it-wasnt-you";
 } else {
-    goto "look-out-the-window"
+    goto "look-out-the-window";
 }
 ```
 
@@ -48,9 +48,9 @@ The disgusted officer leaves the watercooler and heads back, face red in anger.
 ```rundown
 var response = read();
 if (response == "1") {
-    goto "head-down"
+    goto "head-down";
 } else {
-    goto "look-out-the-window"
+    goto "look-out-the-window";
 }
 ```
 
@@ -68,6 +68,16 @@ Whatever is destorying those cars is headed this way.
 1. Take cover under your desk
 1. Watch the chaos unfold
 
+```rundown
+var response = read();
+if (response == "1") {
+    goto "take-cover";
+} else {
+    goto "watch-the-chaos-unfold";
+}
+```
+
+
 # Take Cover
 
 You hide under your desk while the precint continues the loud hum. 
@@ -79,6 +89,15 @@ The room errupts into chaos.
 
 1. Jump out the window
 1. Stay hidden
+
+```rundown
+var response = read();
+if (response == "1") {
+    goto "jump-out-the-window";
+} else {
+    goto "stay-hidden";
+}
+```
 
 # Stay Hidden
 
@@ -93,6 +112,13 @@ You hear the bullets richochet off something.
 
 You feel something hot, and painful.
 It all goes black.
+
+```rundown
+var response = read();
+if (response == "1") {
+    restart();
+}
+```
 
 # Watch the chaos unfold
 
@@ -129,9 +155,9 @@ The cop arrives.
 ```rundown
 var response = read();
 if (response == "1") {
-    goto "yes-i-do"
+    goto "yes-i-do";
 } else {
-    goto "nod"
+    goto "nod";
 ```
 
 
@@ -204,7 +230,7 @@ Minutes pass.
 
 The horrible sound of the building rending apart
 
-Hours pass, it's silent again.
+Hours pass, it is silent again.
 
 Days pass, and you are drifting in and out of conciousness.
 

@@ -54,7 +54,7 @@ Being constrained to markdown is no problem.
 Rundown can jump to anywhere in the document.
 Let's look at a couple of examples.
 
-#### Examples Question
+### Examples Question
 
 Which example would you like to see? [FizzBuzz/Hello World/Continue/End]
 
@@ -89,7 +89,6 @@ The code will execute in a goto loop, jumping into the categories and printing t
 The static variable is only set once in a code block, even if that code block is executed multiple times.
 This example works by jumping to a section, printing the text of that section, then jumping back.
 
-
 #### FizzBuzz Code
 
 ```rundown
@@ -101,7 +100,7 @@ if (counter == 100) {
     goto "examples-question";
 }
 
-if ((counter % 3) == 0 && (counter % 5) == 0) {
+if (((counter % 3) == 0) && ((counter % 5) == 0)) {
     goto "fizzbuzz";
 }
 
@@ -211,7 +210,6 @@ There are a few normal logical operators.
 * `!`
 * `==`
 * `!=`
-
 
 ```
 let a = 1;

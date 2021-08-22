@@ -27,13 +27,13 @@ binary_operator = { add | subtract | multiply | divide | modulo | and | or | equ
     multiply = { "*" }
     divide = { "/" }
     modulo = { "%" }
-    and = { "and" }
-    or = { "or" }
+    and = { "&&" }
+    or = { "||" }
     equals = { "==" }
     not_equals = { "!=" }
 
 unary_operator = { not | negate }
-    not = { "not" }
+    not = { "!" }
     negate = { "-" }
 
 expression = { binary_expression | unary_expression | function_call | term }

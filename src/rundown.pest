@@ -21,7 +21,7 @@ scope = { global_var | static_var | var }
     static_var = { "static" ~ "var" }
     var = { "var" }
 
-operator = { add | subtract | multiply | divide | remainder | and | or | equals }
+operator = { add | subtract | multiply | divide | remainder | and | or | equals | not_equals }
     add = { "+" }
     subtract = { "-" }
     multiply = { "*" }
@@ -30,6 +30,7 @@ operator = { add | subtract | multiply | divide | remainder | and | or | equals 
     and = { "and" }
     or = { "or" }
     equals = { "==" }
+    not_equals = { "!=" }
 
 unary_operator = { not | negative }
     not = { "not" }

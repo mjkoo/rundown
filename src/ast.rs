@@ -15,6 +15,7 @@ pub enum Operator {
     And,
     Or,
     Equals,
+    NotEquals,
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
@@ -41,11 +42,11 @@ pub enum Expression {
     Ident(String),
     Str(String),
     Int(i64),
-    Boolean(bool),
+    Bool(bool),
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
-pub enum Scope {
+pub enum ScopeSpecifier {
     Global,
     Static,
     Local,
@@ -55,7 +56,7 @@ pub enum Scope {
 pub enum Statement {
     Goto(Box<Expression>),
     Declare {
-        scope: Scope,
+        scope: ScopeSpecifier,
         name: String,
         expression: Box<Expression>,
     },
@@ -168,9 +169,9 @@ fn build_statement_from_pair(pair: pest::iterators::Pair<Rule>) -> Statement {
             let mut pair = pair.into_inner();
             let scope_pair = pair.next().unwrap();
             let scope = match scope_pair.into_inner().next().unwrap().as_rule() {
-                Rule::global_var => Scope::Global,
-                Rule::static_var => Scope::Static,
-                Rule::var => Scope::Local,
+                Rule::global_var => ScopeSpecifier::Global,
+                Rule::static_var => ScopeSpecifier::Static,
+                Rule::var => ScopeSpecifier::Local,
                 unknown_pattern => panic!("Unknown pattern: {:?}", unknown_pattern),
             };
             let name_pair = pair.next().unwrap();
@@ -236,8 +237,8 @@ fn get_expression_from_pair(pair: pest::iterators::Pair<Rule>) -> Expression {
         Rule::boolean => {
             let str = pair.as_str();
             match str {
-                "true" => Expression::Boolean(true),
-                _ => Expression::Boolean(false),
+                "true" => Expression::Bool(true),
+                _ => Expression::Bool(false),
             }
         }
         unknown_expression => panic!("Unexpected statement: {:?}", unknown_expression),
@@ -261,6 +262,7 @@ fn parse_operator_expression(
             Rule::and => Operator::And,
             Rule::or => Operator::Or,
             Rule::equals => Operator::Equals,
+            Rule::not_equals => Operator::NotEquals,
             unknown_operator => panic!("Unknown operator: {:?}", unknown_operator),
         },
     }

@@ -21,7 +21,7 @@ scope = { global_var | static_var | var }
     static_var = { "static" ~ "var" }
     var = { "var" }
 
-operator = { add | subtract | multiply | divide | remainder | and | or | equals | not_equals }
+binary_operator = { add | subtract | multiply | divide | remainder | and | or | equals | not_equals }
     add = { "+" }
     subtract = { "-" }
     multiply = { "*" }
@@ -32,12 +32,12 @@ operator = { add | subtract | multiply | divide | remainder | and | or | equals 
     equals = { "==" }
     not_equals = { "!=" }
 
-unary_operator = { not | negative }
+unary_operator = { not | negate }
     not = { "not" }
-    negative = { "-" }
+    negate = { "-" }
 
-expression = { operator_expression | unary_expression | function_call | term }
-    operator_expression = { (function_call | unary_expression | term ) ~ operator ~ expression }
+expression = { binary_expression | unary_expression | function_call | term }
+    binary_expression = { (function_call | unary_expression | term ) ~ binary_operator ~ expression }
     unary_expression = { unary_operator ~ expression }
     function_call = { ident ~ open_paren ~ arguments ~ close_paren }
         arguments = { (expression ~ ("," ~ expression)*)? }

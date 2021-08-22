@@ -6,7 +6,7 @@ use pest::Parser;
 pub struct LanguageParser;
 
 #[derive(PartialEq, Eq, Debug, Clone)]
-pub enum Operator {
+pub enum BinaryOperator {
     Add,
     Subtract,
     Multiply,
@@ -21,13 +21,13 @@ pub enum Operator {
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub enum UnaryOperator {
     Not,
-    Negative,
+    Negate,
 }
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum Expression {
-    OperatorExpression {
-        operator: Operator,
+    BinaryExpression {
+        operator: BinaryOperator,
         left: Box<Expression>,
         right: Box<Expression>,
     },
@@ -192,7 +192,7 @@ fn build_statement_from_pair(pair: pest::iterators::Pair<Rule>) -> Statement {
 fn get_expression_from_pair(pair: pest::iterators::Pair<Rule>) -> Expression {
     match pair.as_rule() {
         Rule::expression => get_expression_from_pair(pair.into_inner().next().unwrap()),
-        Rule::operator_expression => {
+        Rule::binary_expression => {
             let mut pair = pair.into_inner();
             let left_pair = pair.next().unwrap();
             let left = get_expression_from_pair(left_pair);
@@ -250,19 +250,19 @@ fn parse_operator_expression(
     left: Expression,
     right: Expression,
 ) -> Expression {
-    Expression::OperatorExpression {
+    Expression::BinaryExpression {
         left: Box::new(left),
         right: Box::new(right),
         operator: match operator_pair.into_inner().next().unwrap().as_rule() {
-            Rule::add => Operator::Add,
-            Rule::subtract => Operator::Subtract,
-            Rule::multiply => Operator::Multiply,
-            Rule::divide => Operator::Divide,
-            Rule::remainder => Operator::Remainder,
-            Rule::and => Operator::And,
-            Rule::or => Operator::Or,
-            Rule::equals => Operator::Equals,
-            Rule::not_equals => Operator::NotEquals,
+            Rule::add => BinaryOperator::Add,
+            Rule::subtract => BinaryOperator::Subtract,
+            Rule::multiply => BinaryOperator::Multiply,
+            Rule::divide => BinaryOperator::Divide,
+            Rule::remainder => BinaryOperator::Remainder,
+            Rule::and => BinaryOperator::And,
+            Rule::or => BinaryOperator::Or,
+            Rule::equals => BinaryOperator::Equals,
+            Rule::not_equals => BinaryOperator::NotEquals,
             unknown_operator => panic!("Unknown operator: {:?}", unknown_operator),
         },
     }
@@ -276,7 +276,7 @@ fn parse_unary_operator_expression(
         expression: Box::new(expression),
         operator: match operator_pair.into_inner().next().unwrap().as_rule() {
             Rule::not => UnaryOperator::Not,
-            Rule::negative => UnaryOperator::Negative,
+            Rule::negate => UnaryOperator::Negate,
             unknown_operator => panic!("Unknown unary operator: {:?}", unknown_operator),
         },
     }

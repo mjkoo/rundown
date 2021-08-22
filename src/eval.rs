@@ -3,7 +3,7 @@ use std::fmt;
 
 use anyhow::{anyhow, bail, Result};
 
-use crate::ast::{Expression, Operator, ScopeSpecifier, Statement};
+use crate::ast::{BinaryOperator, Expression, ScopeSpecifier, Statement, UnaryOperator};
 
 pub type Scope = HashMap<String, Value>;
 
@@ -36,6 +36,80 @@ impl Value {
             _ => Err(anyhow!("Type error")),
         }
     }
+
+    fn subtract(&self, other: Value) -> Result<Value> {
+        if let Value::Int(a) = self {
+            if let Value::Int(b) = other {
+                return Ok(Value::Int(a - b));
+            }
+        }
+
+        Err(anyhow!("Type error"))
+    }
+
+    fn multiply(&self, other: Value) -> Result<Value> {
+        match self {
+            Value::Str(s) => {
+                if let Value::Int(other) = other {
+                    if other < 0 {
+                        Err(anyhow!("Negative repeat count"))
+                    } else {
+                        Ok(Value::Str(s.repeat(other as usize)))
+                    }
+                } else {
+                    Err(anyhow!("Type error"))
+                }
+            }
+            Value::Int(i) => {
+                if let Value::Int(other) = other {
+                    Ok(Value::Int(i * other))
+                } else {
+                    Err(anyhow!("Type error"))
+                }
+            }
+            _ => Err(anyhow!("Type error")),
+        }
+    }
+
+    fn divide(&self, other: Value) -> Result<Value> {
+        if let Value::Int(a) = self {
+            if let Value::Int(b) = other {
+                return Ok(Value::Int(a / b));
+            }
+        }
+
+        Err(anyhow!("Type error"))
+    }
+
+    fn remainder(&self, other: Value) -> Result<Value> {
+        if let Value::Int(a) = self {
+            if let Value::Int(b) = other {
+                return Ok(Value::Int(a % b));
+            }
+        }
+
+        Err(anyhow!("Type error"))
+    }
+
+    fn and(&self, other: Value) -> Result<Value> {
+        Ok(Value::Bool(self.as_bool() && other.as_bool()))
+    }
+
+    fn or(&self, other: Value) -> Result<Value> {
+        Ok(Value::Bool(self.as_bool() || other.as_bool()))
+    }
+
+    fn not(&self) -> Result<Value> {
+        Ok(Value::Bool(!self.as_bool()))
+    }
+
+    fn negate(&self) -> Result<Value> {
+        if let Value::Int(i) = self {
+            return Ok(Value::Int(-i));
+        }
+
+        Err(anyhow!("Type error"))
+    }
 }
 
 impl fmt::Display for Value {
@@ -61,12 +135,14 @@ pub struct Context {
     function_contexts: HashMap<String, FunctionContext>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum StatementResult {
     Continue,
     Goto(String),
     Return(Value),
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ExpressionResult {
     Value(Value),
     Goto(String),
@@ -286,7 +362,7 @@ impl Context {
                     Err(anyhow!("Attempted to access an undeclared variable"))
                 }
             }
-            Expression::OperatorExpression {
+            Expression::BinaryExpression {
                 operator,
                 left,
                 right,
@@ -305,8 +381,34 @@ impl Context {
                 };
 
                 match operator {
-                    Operator::Add => Ok(ExpressionResult::Value(lhs.add(rhs)?)),
-                    _ => unimplemented!(),
+                    BinaryOperator::Add => Ok(ExpressionResult::Value(lhs.add(rhs)?)),
+                    BinaryOperator::Subtract => Ok(ExpressionResult::Value(lhs.subtract(rhs)?)),
+                    BinaryOperator::Multiply => Ok(ExpressionResult::Value(lhs.multiply(rhs)?)),
+                    BinaryOperator::Divide => Ok(ExpressionResult::Value(lhs.divide(rhs)?)),
+                    BinaryOperator::Remainder => Ok(ExpressionResult::Value(lhs.remainder(rhs)?)),
+                    BinaryOperator::And => Ok(ExpressionResult::Value(lhs.and(rhs)?)),
+                    BinaryOperator::Or => Ok(ExpressionResult::Value(lhs.or(rhs)?)),
+                    BinaryOperator::Equals => Ok(ExpressionResult::Value(Value::Bool(lhs == rhs))),
+                    BinaryOperator::NotEquals => {
+                        Ok(ExpressionResult::Value(Value::Bool(lhs != rhs)))
+                    }
+                }
+            }
+            Expression::UnaryExpression {
+                operator,
+                expression,
+            } => {
+                let expression =
+                    match self.eval_expression(expression, local_variables, function_context)? {
+                        ExpressionResult::Value(v) => v,
+                        goto => {
+                            return Ok(goto);
+                        }
+                    };
+
+                match operator {
+                    UnaryOperator::Not => Ok(ExpressionResult::Value(expression.not()?)),
+                    UnaryOperator::Negate => Ok(ExpressionResult::Value(expression.negate()?)),
                 }
             }
             _ => Err(anyhow!("foo")),

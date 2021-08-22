@@ -94,6 +94,8 @@ fn main() -> Result<()> {
     let input = fs::read_to_string(&opt.input)?;
     let section_index = construct_index(&markdown::tokenize(&input));
 
+    let mut context: eval::Context = Default::default();
+
     let mut pc = 0;
     while let Some((name, section)) = section_index.get_index(pc) {
         println!("{}", name);
@@ -101,7 +103,8 @@ fn main() -> Result<()> {
             match block {
                 Block::CodeBlock(Some(syntax), content) if syntax == RUNDOWN_CODE_BLOCK_SYNTAX => {
                     let statements = ast::parse(content)?;
-                    println!("{:#?}", &statements);
+                    let res = context.eval(&statements)?;
+                    println!("{:?}", &res);
                 }
                 _ => {
                     let content = markdown::generate_markdown(vec![block.clone()]);

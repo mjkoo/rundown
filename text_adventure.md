@@ -89,7 +89,10 @@ Not realizing the supernatural situation they have found themselves in.
 You stay hidden the whole time. 
 
 The cops start firing at something. 
-A stray bullet strikes you, killing you instantly. 
+You hear the bullets richochet off something. 
+
+You feel something hot, and painful.
+It all goes black.
 
 # Watch the chaos unfold
 
@@ -203,7 +206,7 @@ The horrible sound of the building rending apart
 
 Hours pass, it's silent again.
 
-Days pass, and you are drifting in and hour of conciousness. 
+Days pass, and you are drifting in and out of conciousness. 
 
 1. Restart
 

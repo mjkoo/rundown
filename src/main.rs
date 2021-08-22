@@ -103,8 +103,7 @@ fn main() -> Result<()> {
     let mut context = Context::new(builtins());
 
     let mut pc = 0;
-    'outer: while let Some((name, section)) = section_index.get_index(pc) {
-        println!("{}", name);
+    'outer: while let Some((_name, section)) = section_index.get_index(pc) {
         for block in section {
             match block {
                 Block::CodeBlock(Some(syntax), content) if syntax == RUNDOWN_CODE_BLOCK_SYNTAX => {

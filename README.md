@@ -1,9 +1,5 @@
 # Rundown
 
-```rundown
-goto "fizzbuzz-code";
-```
-
 Rundown is a domain specific language for building Runnable Markdown. 
 
 The intent is to make a Literate programming language, where the whole program and text are interwoven in such as way that the code is legible. 
@@ -100,7 +96,7 @@ This example works by jumping to a section, printing the text of that section, t
 let global counter = 0;
 counter = counter + 1;
 if (counter == 100) {
-    sleep(5);
+    sleep(1);
     counter = 0;
     goto "examples-question";
 }
@@ -166,7 +162,7 @@ print("**Hello World**");
 Let's head back to the examples.  
 
 ```rundown
-sleep(5);
+sleep(1);
 goto "examples-question";
 ```
 

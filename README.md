@@ -9,7 +9,7 @@ The intent is to make a Literate programming language, where the whole program a
 Would you like to hear more about Rundown? [Yes/No]
 
 ```rundown
-var response = read();
+let response = read();
 if (response == "no") {
     goto "end";
 } 
@@ -30,7 +30,7 @@ In fact, the source only serves to modify what is read.
 Do you want to see some examples or have you seen enough? [Examples/End] 
 
 ```rundown
-var response = read();
+let response = read();
 if ( response == "examples" ) {
     goto "examples";
 } 
@@ -51,16 +51,16 @@ Let's look at a couple of examples.
 
 #### Examples Question
 
-You have been here ```rundown static var counter = 0; counter = counter + 1; print(counter);``` times
+You have been here ```rundown let static counter = 0; counter = counter + 1; print(counter);``` times
 
 You have been here 
-```rundown static var counter = 0; counter = counter + 1; print(counter);``` 
+```rundown let static counter = 0; counter = counter + 1; print(counter);``` 
 times
 
 Which example would you like to see? [FizzBuzz/Hello World/Continue/End]
 
 ``` rundown
-var response = read();
+let response = read();
 if (response == "fizzbuzz") {
     goto "fizzbuzz";
 } 
@@ -94,7 +94,7 @@ This example works by jumping to a section, printing the text of that section, t
 #### FizzBuzz Code
 
 ```rundown
-static var counter = 0;
+let static counter = 0;
 counter = counter + 1;
 if (counter == 100) {
     sleep(5);
@@ -181,7 +181,7 @@ Just add the `rundown` to the code block info string.
 
 
 ```rundown
-var a = 1;
+let a = 1;
 print(a);
 ```
 
@@ -192,10 +192,10 @@ Valid variable names start with a letter, but are alphanumeric afterwards.
 For example, `a1` is a valid variable. `1a` is not. 
 
 How you declared a variable impacts it's scope. 
-1. `var a = 1;` will declare a variable local to a code block. 
-1. `static var a = 1` will declare a variable that persists in a code block through uses. 
+1. `let a = 1;` will declare a variable local to a code block. 
+1. `let static a = 1` will declare a variable that persists in a code block through uses. 
 It will only be declared once for a code block, but the value persists. 
-1. `global var a = 1` declares a variable that can be used in all code blocks.
+1. `let global a = 1` declares a variable that can be used in all code blocks.
 
 Variable values can be modified through assigning. 
 Simply use the variable name `=` and an expression.
@@ -217,7 +217,7 @@ There are a few normal logical operators.
 
 
 ```
-var a = 1;
+let a = 1;
 if (a == 1) {
     print("A is 1");
 } else {
@@ -226,7 +226,7 @@ if (a == 1) {
 ```
 
 ```
-var a = 1;
+let a = 1;
 if (a == 1 and b == 1) {
     print("A and B are equal to 1"_;
 }

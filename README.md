@@ -4,6 +4,8 @@ Rundown is a domain specific language for building Runnable Markdown.
 
 The intent is to make a Literate programming language, where the whole program and text are interwoven in such as way that the code is legible. 
 
+To execute a Rundown Script, run `cargo run /path/to/script` from the project directory.
+
 #### Rundown Question
 
 Would you like to hear more about Rundown? [Yes/No]
